@@ -13,7 +13,7 @@ destination définie afin de faciliter le dépannage, l'analyse de sécurité et
 VTAP s'appuie sur un filtre d'entrée — un ensemble de règles déterminant quel trafic est
 dupliqué.
 
-Étapes :
+Étapes pour la création de VTAP   :
 1. Connexion à Oracle Cloud:
 
 ![Connexion oracle cloud](imagesTP5/connexionOracle.png)
