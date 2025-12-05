@@ -16,18 +16,19 @@ dupliqué.
 Étapes pour la création de VTAP sur oracle Cloud  :
 1. Connexion à Oracle Cloud:
 
-![Connexion oracle cloud](imagesTP5/connexionOracle.png)
 
 - On se connecte à notre compte OCI via la console web.
 - Par la suite, on accéde au tableau de bord principal d’`Oracle Cloud`.
 
+![Connexion oracle cloud](imagesTP5/connexionOracle.png)
+
 2. On regarde dans la VCN de notre instance la liste de sécurité en défaut pour vérifier les règles de sorties et les règles entrantes.
-![Default list VCN for TP5](imagesTP5/1.png)
 
 - On va dans Networking ➜ Virtual Cloud Networks.
 - On ouvre la VCN associée à votre instance.
 - On vérifie les Security Lists par défaut pour les **règles entrantes (Ingress)** et **les règles sortantes (Egress)**
 
+![Default list VCN for TP5](imagesTP5/1.png)
 
 ![Listener Creation](imagesTP5/2.png)
 ![Network load balancer name](imagesTP5/3.png)
