@@ -18,4 +18,9 @@ dupliqué.
 
 ![Connexion oracle cloud](imagesTP5/connexionOracle.png)
 
-
+![Connexion oracle cloud](imagesTP5/1.png)
+![Connexion oracle cloud](imagesTP5/2.png)
+![Connexion oracle cloud](imagesTP5/3.png)
+![Connexion oracle cloud](imagesTP5/4.png)
+![Connexion oracle cloud](imagesTP5/5.png)
+![Connexion oracle cloud](imagesTP5/6.png)
