@@ -24,3 +24,4 @@ dupliqué.
 ![Connexion oracle cloud](imagesTP5/4.png)
 ![Connexion oracle cloud](imagesTP5/5.png)
 ![Connexion oracle cloud](imagesTP5/6.png)
+![Connexion oracle cloud](imagesTP5/7.png)
