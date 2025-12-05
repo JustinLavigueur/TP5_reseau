@@ -12,3 +12,10 @@ Un point d'accès virtuel de test (VTAP) reproduit le trafic d'une source choisi
 destination définie afin de faciliter le dépannage, l'analyse de sécurité et la surveillance. Le
 VTAP s'appuie sur un filtre d'entrée — un ensemble de règles déterminant quel trafic est
 dupliqué.
+
+Étapes :
+1. Connexion à Oracle Cloud:
+
+![Connexion oracle cloud](imagesTP5/connexionOracle.png)
+
+
