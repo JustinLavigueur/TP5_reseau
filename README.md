@@ -83,6 +83,10 @@ L’objectif de cette section était de générer du trafic HTTP, de le faire pa
 Pour ce faire, nous avons hébergé un petit serveur HTTP avec Python et analysé les requêtes capturées.
 
 ### 2.1 Mise à jour de notre instance
+Avant d'installer quoi que ce soit, on a mis à jour les paquets du système de l'instance.
+
+```bash
+sudo apt update && sudo apt upgrade -y```
 
 ![CMD](imagesTP5/1-cmd.png)
 
