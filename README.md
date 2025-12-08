@@ -55,11 +55,11 @@ On ajoute les instances Compute nécessaires au backend set:
 ![Backend IPv4 compute instances](imagesTP5/4.png)
 
 ### 1.6 — Configuration du Health Check
+On configure le protocole, le port et les intervalles de vérification:
 
-- On définit une politique de Health Check avec son protocole, son port et l'intervalle de vérification :
 ![Specify health check policy](imagesTP5/5.png)
 
-7. Création du filtre de capture (Capture Filter)
+### 1.7 — Création du filtre de capture (Capture Filter)
 
 - On va dans VTAP ➜ Capture Filters.
 - On crée un nouveau filtre d’entrée.
@@ -67,13 +67,28 @@ On ajoute les instances Compute nécessaires au backend set:
 
 ![Create capture filter](imagesTP5/6.png)
 
-8. Création du VTAP
-
-- On clique sur Create VTAP.
+### 1.8 — Création du VTAP
+On clique sur Create VTAP et on fait les étapes suivantes:
 - On sélectionne :
 - La source du trafic (instance, ENI, Load Balancer, etc.)
 - La destination où envoyer les copies (un outil d’analyse, une autre instance…)
 - Le Capture Filter créé précédemment
 
 ![Window Create VTAP](imagesTP5/7.png)
+
+---
+
+## === 2. Analyse du trafic HTTP avec Wireshark ===
+L’objectif de cette section était de générer du trafic HTTP, de le faire passer dans le VTAP et d’observer ce trafic en temps réel dans Wireshark.
+Pour ce faire, nous avons hébergé un petit serveur HTTP avec Python et analysé les requêtes capturées.
+
+### 2.1 Mise à jour de notre instance
+
+![CMD](imagesTP5/1-cmd.png)
+
+
+
+
+
+
 
