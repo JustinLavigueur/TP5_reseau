@@ -82,16 +82,22 @@ On clique sur Create VTAP et on fait les étapes suivantes:
 L’objectif de cette section était de générer du trafic HTTP, de le faire passer dans le VTAP et d’observer ce trafic en temps réel dans Wireshark.
 Pour ce faire, nous avons hébergé un petit serveur HTTP avec Python et analysé les requêtes capturées.
 
-### 2.1 Mise à jour de notre instance
-Avant d'installer quoi que ce soit, on a mis à jour les paquets du système de l'instance.
+### 2.1 — Mise à jour de notre instance
+Avant d'installer quoi que ce soit, on a mis à jour les paquets du système de l'instance avec les commandes suivantes:
 
 ```bash
-sudo apt update && sudo apt upgrade -y```
+sudo apt update && sudo apt upgrade -y
+```
 
 ![CMD](imagesTP5/1-cmd.png)
 
+### 2.2 — Installation de Python3 (nécessaire pour héberger le serveur HTTP)
 
+```bash
+sudo apt install -y python3 python3-pip
+```
 
+![CMD](imagesTP5/2-cmd.png)
 
 
 
