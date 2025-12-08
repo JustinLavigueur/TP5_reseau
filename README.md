@@ -106,7 +106,8 @@ Cette installation ne fait pas partie directe de Wireshark, mais les commandes s
 sudo apt install -y clamav
 ```
 
-![CMD](imagesTP5/3-cmd.png)
+
+![CMD](imagesTP5/4-cmd.png)
 
 
 ### 2.4 Arrêt du service FreshClam (pour mise à jour manuelle)
@@ -115,7 +116,7 @@ sudo apt install -y clamav
 sudo systemctl stop clamav-freshclam.service
 ```
 
-![CMD](imagesTP5/4-cmd.png)
+![CMD](imagesTP5/5-cmd.png)
 
 ### 2.5 Mise à jour de la base virale
 
@@ -123,7 +124,7 @@ sudo systemctl stop clamav-freshclam.service
 sudo freshclam
 ```
 
-![CMD](imagesTP5/5-cmd.png)
+![CMD](imagesTP5/6-cmd.png)
 
 ### 2.6 Installation du daemon ClamAV
 
@@ -131,7 +132,7 @@ sudo freshclam
 sudo apt install -y clamav-daemon --no-install-recommends
 ```
 
-![CMD](imagesTP5/6-cmd.png)
+![CMD](imagesTP5/7-cmd.png)
 
 ### 2.7 Activation du daemon ClamAV
 
@@ -139,7 +140,7 @@ sudo apt install -y clamav-daemon --no-install-recommends
 sudo systemctl enable clamav-daemon
 ```
 
-![CMD](imagesTP5/7-cmd.png)
+![CMD](imagesTP5/8-cmd.png)
 
 ### 2.8 Démarrage du daemon
 
@@ -147,7 +148,7 @@ sudo systemctl enable clamav-daemon
 sudo systemctl start clamav-daemon
 ```
 
-![CMD](imagesTP5/8-cmd.png)
+![CMD](imagesTP5/9-cmd.png)
 
 ### 2.9 Installation de Certbot (même session, utilisé pour HTTPS plus tard)
 
@@ -155,7 +156,7 @@ sudo systemctl start clamav-daemon
 sudo apt install -y certbot
 ```
 
-![CMD](imagesTP5/9-cmd.png)
+![CMD](imagesTP5/10-cmd.png)
 
 ### 2.10 Lancement du serveur HTTP (trafic capturé par le VTAP)
 Ce serveur permet de générer du trafic HTTP simple (GET, HTTP/1.0 / 1.1), que le VTAP va dupliquer vers notre instance de capture:
@@ -164,7 +165,6 @@ Ce serveur permet de générer du trafic HTTP simple (GET, HTTP/1.0 / 1.1), que 
 sudo python3 -m http.server 80
 ```
 
-![CMD](imagesTP5/10-cmd.png)
 
 
 
