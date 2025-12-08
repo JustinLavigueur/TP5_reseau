@@ -99,6 +99,90 @@ sudo apt install -y python3 python3-pip
 
 ![CMD](imagesTP5/2-cmd.png)
 
+### 2.3 Installation de ClamAV (réalisée pendant la même session)
+Cette installation ne fait pas partie directe de Wireshark, mais les commandes sont liées à la mise en place de l’environnement d’analyse.
+
+```bash
+sudo apt install -y clamav
+```
+
+![CMD](imagesTP5/3-cmd.png)
+
+
+### 2.4 Arrêt du service FreshClam (pour mise à jour manuelle)
+
+```bash
+sudo systemctl stop clamav-freshclam.service
+```
+
+![CMD](imagesTP5/4-cmd.png)
+
+### 2.5 Mise à jour de la base virale
+
+```bash
+sudo freshclam
+```
+
+![CMD](imagesTP5/5-cmd.png)
+
+### 2.6 Installation du daemon ClamAV
+
+```bash
+sudo apt install -y clamav-daemon --no-install-recommends
+```
+
+![CMD](imagesTP5/6-cmd.png)
+
+### 2.7 Activation du daemon ClamAV
+
+```bash
+sudo systemctl enable clamav-daemon
+```
+
+![CMD](imagesTP5/7-cmd.png)
+
+### 2.8 Démarrage du daemon
+
+```bash
+sudo systemctl start clamav-daemon
+```
+
+![CMD](imagesTP5/8-cmd.png)
+
+### 2.9 Installation de Certbot (même session, utilisé pour HTTPS plus tard)
+
+```bash
+sudo apt install -y certbot
+```
+
+![CMD](imagesTP5/9-cmd.png)
+
+### 2.10 Lancement du serveur HTTP (trafic capturé par le VTAP)
+Ce serveur permet de générer du trafic HTTP simple (GET, HTTP/1.0 / 1.1), que le VTAP va dupliquer vers notre instance de capture:
+
+```bash
+sudo python3 -m http.server 80
+```
+
+![CMD](imagesTP5/10-cmd.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
