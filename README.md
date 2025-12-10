@@ -111,7 +111,7 @@ sudo apt install -y clamav
 
 
 ### 2.4 Arrêt du service FreshClam (pour mise à jour manuelle)
-
+FreshClam est le service qui met automatiquement à jour la base virale. On l’arrête pour pouvoir faire une mise à jour manuelle juste après.
 ```bash
 sudo systemctl stop clamav-freshclam.service
 ```
@@ -119,7 +119,7 @@ sudo systemctl stop clamav-freshclam.service
 ![CMD](imagesTP5/5-cmd.png)
 
 ### 2.5 Mise à jour de la base virale
-
+On met à jour la base de signatures utilisées par ClamAV pour détecter les virus.
 ```bash
 sudo freshclam
 ```
@@ -127,7 +127,7 @@ sudo freshclam
 ![CMD](imagesTP5/6-cmd.png)
 
 ### 2.6 Installation du daemon ClamAV
-
+Ce daemon permet d’exécuter ClamAV en arrière-plan et d’effectuer des analyses automatiques.
 ```bash
 sudo apt install -y clamav-daemon --no-install-recommends
 ```
@@ -135,7 +135,7 @@ sudo apt install -y clamav-daemon --no-install-recommends
 ![CMD](imagesTP5/7-cmd.png)
 
 ### 2.7 Activation du daemon ClamAV
-
+On active le service pour qu’il démarre automatiquement au prochain démarrage de l’instance.
 ```bash
 sudo systemctl enable clamav-daemon
 ```
@@ -143,7 +143,7 @@ sudo systemctl enable clamav-daemon
 ![CMD](imagesTP5/8-cmd.png)
 
 ### 2.8 Démarrage du daemon
-
+On démarre manuellement le daemon afin qu’il soit immédiatement actif.
 ```bash
 sudo systemctl start clamav-daemon
 ```
@@ -151,7 +151,7 @@ sudo systemctl start clamav-daemon
 ![CMD](imagesTP5/9-cmd.png)
 
 ### 2.9 Installation de Certbot (même session, utilisé pour HTTPS plus tard)
-
+Certbot sera utilisé plus tard pour générer un certificat HTTPS. On l’installe maintenant car il fait partie de la même session de configuration.
 ```bash
 sudo apt install -y certbot
 ```
