@@ -78,16 +78,34 @@ On clique sur Create VTAP et on fait les étapes suivantes:
 
 ---
 
-=== 1.9 — (Optionnel) Création d’un serveur HTTP avec Apache ===
+## === 1.9 — (Optionnel) Création d’un serveur HTTP avec Apache ===
 
 Avant d’utiliser Python pour héberger notre serveur HTTP, il est important de mentionner qu’un serveur HTTP classique peut être mis en place avec Apache2, l’un des serveurs web les plus utilisés.
-
 Nous avons installé Apache afin de montrer une alternative professionnelle pour générer du trafic HTTP.
 
-Installation d’Apache2
-
+### Installation d’Apache2
 Apache est un serveur web complet permettant de répondre aux requêtes HTTP.
 L'installation se fait simplement avec :
+```bash
+sudo apt install -y apache2
+```
+
+### Vérification du service Apache
+Après l'installation, Apache démarre automatiquement.
+On peut vérifier son état avec :
+```bash
+sudo systemctl status apache2
+```
+
+### Génération de trafic HTTP avec Apache
+Une fois actif, Apache écoute par défaut sur le port 80.
+En accédant à l’adresse publique de l’instance :
+```bash
+http://<adresse-ip-de-l-instance>
+```
+
+
+
 
 ## === 2. Analyse du trafic HTTP avec Wireshark ===
 L’objectif de cette section était de générer du trafic HTTP, de le faire passer dans le VTAP et d’observer ce trafic en temps réel dans Wireshark.
