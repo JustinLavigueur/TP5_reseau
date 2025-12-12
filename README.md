@@ -131,6 +131,10 @@ sudo tcpdump -i ens3 -w capture.pcap
 
 Le fichier de capture est ensuite analysé avec **Wireshark**.
 
+![Curl port80](imagesTP5/curl_80.png)
+
+![Curl port443](imagesTP5/curl_443.png)
+
 ---
 
 ## Analyse avec Wireshark
