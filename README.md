@@ -20,6 +20,10 @@
 
 ![Architecture OCI](imagesTP5/connexionOracle.png)
 
+
+
+
+![Instances](imagesTP5/les_instances.png)
 ---
 
 ## Configuration du serveur HTTP
