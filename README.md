@@ -1,217 +1,159 @@
-# TP5 – Réseau
-**Cours : Réseau**  
-**Travail pratique 5 :  Configurer un VTAP, utilisation de Wireshark,
-configuration d'un Serveur https et installation d'un antivirus sur Oracle cloud**
+# TP5 – VTAP, Wireshark, HTTPS et Antivirus (Oracle Cloud)
 
-**Coéquipiers : Justin Lavigueur et Alexandre Sweeney**
+**Cours :** 420‑06C‑FX – Réseaux
+**Enseignant :** Jean‑Sébastien Nadeau  
+**Session :** Automne 2025
 
----
-
-## === 1. Configuration du VTAP sur Oracle Cloud ===
-Un point d'accès virtuel de test (VTAP) reproduit le trafic d'une source choisie vers une
-destination définie afin de faciliter le dépannage, l'analyse de sécurité et la surveillance. Le
-VTAP s'appuie sur un filtre d'entrée — un ensemble de règles déterminant quel trafic est
-dupliqué.
-
-Étapes pour la création de VTAP sur oracle Cloud  :
-### 1.1 — Connexion à Oracle Cloud
-- On se connecte à notre compte OCI via le navigateur web.
-- Par la suite, on accéde au tableau de bord principal d’`Oracle Cloud`.
-
-![Connexion oracle cloud](imagesTP5/connexionOracle.png)
-
-### 1.2 — Vérification des Security Lists dans la VCN
-On regarde dans la VCN de notre instance la liste de sécurité en défaut pour vérifier les règles de sorties et les règles entrantes:
-
-- On va dans Networking --> Virtual Cloud Networks.
-- On ouvre la VCN associée à votre instance.
-- On vérifie les Security Lists par défaut pour les **règles entrantes (Ingress)** et **les règles sortantes (Egress)**
-
-![Default list VCN for TP5](imagesTP5/1.png)
-
-### 1.3 — Création d’un Listener pour le Load Balancer
-On crée le Listener qui permet au Load Balancer de recevoir le trafic dupliqué:
-
-- On navigue vers Load Balancers.
-- On ajoute un Listener.
-- On choisit le protocole et le port approprié selon les besoins du test.
-
-![Listener Creation](imagesTP5/2.png)
-
-### 1.4 — Mise en place du nom du Network Load Balancer
-On donne un nom au NLB et choisissons le subnet associé:
-
-- On donne un nom au Network Load Balancer (NLB).
-- On associe la VCN et le subnet adéquats.
-
-![Network load balancer name](imagesTP5/3.png)
-
-### 1.5 — Ajout des instances backend
-On ajoute les instances Compute nécessaires au backend set:
-
-- On sélectionne les instances compute qui seront dans le backend set.
-- On ajoute leur adresse IPv4.
-  
-![Backend IPv4 compute instances](imagesTP5/4.png)
-
-### 1.6 — Configuration du Health Check
-On configure le protocole, le port et les intervalles de vérification:
-
-![Specify health check policy](imagesTP5/5.png)
-
-### 1.7 — Création du filtre de capture (Capture Filter)
-
-- On va dans VTAP ➜ Capture Filters.
-- On crée un nouveau filtre d’entrée.
-- On définit les règles qui indiquent quel trafic sera capturé (source, protocole, ports).
-
-![Create capture filter](imagesTP5/6.png)
-
-### 1.8 — Création du VTAP
-On clique sur Create VTAP et on fait les étapes suivantes:
-- On sélectionne :
-- La source du trafic (instance, ENI, Load Balancer, etc.)
-- La destination où envoyer les copies (un outil d’analyse, une autre instance…)
-- Le Capture Filter créé précédemment
-
-![Window Create VTAP](imagesTP5/7.png)
+**Équipe :**  
+- Nom étudiant 1  
+- Nom étudiant 2
 
 ---
 
-## === 1.9 — (Optionnel) Création d’un serveur HTTP avec Apache ===
+## 🎯 Objectifs du travail
+- Configurer un **VTAP** sur Oracle Cloud Infrastructure (OCI)
+- Capturer et analyser du trafic **HTTP** avec **Wireshark**
+- Héberger un site **HTTPS** avec **SSL/TLS (CertBot / Let's Encrypt)**
+- Installer et tester un **antivirus ClamAV** sur une instance OCI
+- Documenter toutes les étapes en **Markdown avec captures d’écran**
 
-Avant d’utiliser Python pour héberger notre serveur HTTP, il est important de mentionner qu’un serveur HTTP classique peut être mis en place avec Apache2, l’un des serveurs web les plus utilisés.
-Nous avons installé Apache afin de montrer une alternative professionnelle pour générer du trafic HTTP.
+---
 
-### Installation d’Apache2
-Apache est un serveur web complet permettant de répondre aux requêtes HTTP.
-L'installation se fait simplement avec :
-```bash
-sudo apt install -y apache2
-```
+## 🧱 Architecture générale
+- 1 instance **Oracle Cloud Compute (Ubuntu)**
+- 1 **VTAP** attaché à l’instance
+- 1 machine de capture avec **Wireshark**
+- 1 serveur web Python (HTTP & HTTPS)
+- 1 antivirus **ClamAV**
 
-### Vérification du service Apache
-Après l'installation, Apache démarre automatiquement.
-On peut vérifier son état avec :
-```bash
-sudo systemctl status apache2
-```
+![Architecture OCI](imagesTP5/connexionOracle.png)
 
-### Génération de trafic HTTP avec Apache
-Une fois actif, Apache écoute par défaut sur le port 80.
-En accédant à l’adresse publique de l’instance :
-```bash
-http://<adresse-ip-de-l-instance>
-```
+---
 
+## 1️⃣ Configuration du serveur HTTP
 
-
-
-## === 2. Analyse du trafic HTTP avec Wireshark ===
-L’objectif de cette section était de générer du trafic HTTP, de le faire passer dans le VTAP et d’observer ce trafic en temps réel dans Wireshark.
-Pour ce faire, nous avons hébergé un petit serveur HTTP avec Python et analysé les requêtes capturées.
-
-### 2.1 — Mise à jour de notre instance
-Avant d'installer quoi que ce soit, on a mis à jour les paquets du système de l'instance avec les commandes suivantes:
-
-```bash
-sudo apt update && sudo apt upgrade -y
-```
-
-![CMD](imagesTP5/1-cmd.png)
-
-### 2.2 — Installation de Python3 (nécessaire pour héberger le serveur HTTP)
-
-```bash
-sudo apt install -y python3 python3-pip
-```
-
-![CMD](imagesTP5/2-cmd.png)
-
-### 2.3 Installation de ClamAV (réalisée pendant la même session)
-Cette installation ne fait pas partie directe de Wireshark, mais les commandes sont liées à la mise en place de l’environnement d’analyse.
-
-```bash
-sudo apt install -y clamav
-```
-
-
-![CMD](imagesTP5/4-cmd.png)
-
-
-### 2.4 Arrêt du service FreshClam (pour mise à jour manuelle)
-FreshClam est le service qui met automatiquement à jour la base virale. On l’arrête pour pouvoir faire une mise à jour manuelle juste après.
-```bash
-sudo systemctl stop clamav-freshclam.service
-```
-
-![CMD](imagesTP5/5-cmd.png)
-
-### 2.5 Mise à jour de la base virale
-On met à jour la base de signatures utilisées par ClamAV pour détecter les virus.
-```bash
-sudo freshclam
-```
-
-![CMD](imagesTP5/6-cmd.png)
-
-### 2.6 Installation du daemon ClamAV
-Ce daemon permet d’exécuter ClamAV en arrière-plan et d’effectuer des analyses automatiques.
-```bash
-sudo apt install -y clamav-daemon --no-install-recommends
-```
-
-![CMD](imagesTP5/7-cmd.png)
-
-### 2.7 Activation du daemon ClamAV
-On active le service pour qu’il démarre automatiquement au prochain démarrage de l’instance.
-```bash
-sudo systemctl enable clamav-daemon
-```
-
-![CMD](imagesTP5/8-cmd.png)
-
-### 2.8 Démarrage du daemon
-On démarre manuellement le daemon afin qu’il soit immédiatement actif.
-```bash
-sudo systemctl start clamav-daemon
-```
-
-![CMD](imagesTP5/9-cmd.png)
-
-### 2.9 Installation de Certbot (même session, utilisé pour HTTPS plus tard)
-Certbot sera utilisé plus tard pour générer un certificat HTTPS. On l’installe maintenant car il fait partie de la même session de configuration.
-```bash
-sudo apt install -y certbot
-```
-
-![CMD](imagesTP5/10-cmd.png)
-
-### 2.10 Lancement du serveur HTTP (trafic capturé par le VTAP)
-Ce serveur permet de générer du trafic HTTP simple (GET, HTTP/1.0 / 1.1), que le VTAP va dupliquer vers notre instance de capture:
-
+### Démarrage du serveur HTTP
 ```bash
 sudo python3 -m http.server 80
 ```
 
+### Vérification dans le navigateur
+- Accès via l’IP publique de l’instance
+- Affichage du fichier `index.html`
 
+![Serveur HTTP actif](imagesTP5/cmd-serv.png)
 
+---
 
+## 2️⃣ Création et configuration du VTAP
 
+### Étapes réalisées dans OCI
+1. Création du **VTAP**
+2. Sélection de l’instance comme **source**
+3. Définition du **VTAP target**
+4. Configuration des **filtres (HTTP / TCP)**
 
+![Création du VTAP](imagesTP5/vtap.png)
+![Source et Target du VTAP](imagesTP5/vtap%20%282%29.png)
+![Détails du VTAP en cours d'exécution](imagesTP5/vtap%20%283%29.png)
 
+---
 
+## 3️⃣ Capture et analyse avec Wireshark
 
+### Filtres utilisés
+- Filtre d’affichage :
+```
+http || tcp.port == 80
+```
 
+### Analyse effectuée
+- Requêtes HTTP GET
+- Réponses HTTP (codes 200, 304, etc.)
+- En‑têtes HTTP
+- Cookies
+- Suivi de flux TCP
 
+![Wireshark – trafic TLS / HTTPS](imagesTP5/wireshark.png)
+![Wireshark – requêtes HTTP GET](imagesTP5/wireshark%20%282%29.png)
+![Wireshark – VXLAN / UDP 4789](imagesTP5/wireshark%20%283%29.png)
 
+---
 
+## 4️⃣ Hébergement du site HTTPS (SSL/TLS)
 
+### Installation de CertBot
+```bash
+sudo apt update
+sudo apt install certbot -y
+```
 
+### Génération du certificat
+```bash
+sudo certbot certonly --standalone -d votre-domaine-ou-ip
+```
 
+### Configuration du serveur HTTPS Python
+- Utilisation du certificat généré par **Let's Encrypt**
+- Exécution en mode `sudo`
 
+![Installation de Certbot](imagesTP5/9-cmd.png)
+![Serveur HTTPS actif](imagesTP5/serveur_index.png)
 
+---
 
+## 5️⃣ Installation et configuration de ClamAV
 
+### Installation
+```bash
+sudo apt install clamav clamav-daemon -y
+```
 
+### Mise à jour des signatures
+```bash
+sudo freshclam
+```
+
+### Test de scan
+```bash
+clamscan test.txt
+```
+
+![Installation de ClamAV](imagesTP5/4-cmd.png)
+![Mise à jour des signatures ClamAV](imagesTP5/6-cmd.png)
+![Service clamd actif](imagesTP5/7-cmd.png)
+
+---
+
+## 🔐 Sécurité et bonnes pratiques
+- Pas d’utilisation de **ufw** (recommandation OCI)
+- Accès SSH sécurisé par clé
+- HTTPS avec certificat valide
+- Analyse antivirus régulière
+
+---
+
+## 📁 Contenu du dépôt Git
+- `README.md`
+- Dossier `imagesTP5/`
+- Captures d’écran de toutes les étapes
+
+---
+
+## 📎 Informations de remise
+- IP publique du serveur HTTPS
+- Clé SSH privée
+- Lien vers le dépôt GitHub **privé**
+- Enseignant ajouté comme contributeur : **jsteach**
+
+---
+
+## ✅ Conclusion
+Ce travail nous a permis de comprendre concrètement :
+- La surveillance réseau avec un **VTAP**
+- L’analyse de trafic avec **Wireshark**
+- La sécurisation d’un serveur avec **HTTPS**
+- Le renforcement de la sécurité via **ClamAV**
+
+Le document sert également de **backup complet** en cas de problème avec les instances OCI.
 
