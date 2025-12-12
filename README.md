@@ -96,7 +96,15 @@ Le NLB est utilisé comme **cible du VTAP**.
 
 ## Configuration du VTAP
 
-Le VTAP permet de **miroiter le trafic** de l’instance serveur vers l’instance analyseur.
+Le VTAP permet de **miroiter le trafic** de l’instance serveur vers l’instance analyseur. En fait, un point d'accès virtuel de test (VTAP) reproduit le trafic d'une source choisie vers une
+destination définie afin de faciliter le dépannage, l'analyse de sécurité et la surveillance. Le
+VTAP s'appuie sur un filtre d'entrée — un ensemble de règles déterminant quel trafic est
+dupliqué.
+
+### Connexion à Oracle Cloud
+- On se connecte à notre compte OCI via le navigateur web.
+- Par la suite, on accéde au tableau de bord principal d’`Oracle Cloud`.
+![Connexion oracle cloud](imagesTP5/connexionOracle.png)
 
 ![Création du VTAP](imagesTP5/vtap_creation.png)
 ![VTAP actif](imagesTP5/vtap.png)
