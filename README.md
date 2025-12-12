@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Objectifs du TP
+## Objectifs du TP
 - Héberger un site web **HTTP (80)** et **HTTPS (443)** sur Oracle Cloud
 - Générer un **certificat SSL auto‑signé avec OpenSSL** (en remplacement de Certbot)
 - Configurer un **VTAP** afin de miroiter le trafic réseau
@@ -15,7 +15,7 @@
 
 ---
 
-## 🧱 Architecture du laboratoire
+## Architecture du laboratoire
 Deux instances Oracle Cloud sont utilisées :
 - **Instance serveur** : hébergement du site web (HTTP/HTTPS)
 - **Instance analyseur (VTAP)** : réception et analyse du trafic miroir
@@ -24,7 +24,7 @@ Deux instances Oracle Cloud sont utilisées :
 
 ---
 
-## 1️⃣ Création et configuration du site web
+## Création et configuration du site web
 
 ### Création du fichier `index.html`
 Le fichier HTML a été créé et modifié directement sur l’instance serveur.
@@ -42,9 +42,9 @@ sudo python3 -m http.server 80
 
 ---
 
-## 2️⃣ HTTPS avec certificat SSL auto‑signé (OpenSSL)
+## HTTPS avec certificat SSL auto‑signé (OpenSSL)
 
-⚠️ **Certbot n’a pas été utilisé**. Il a été **remplacé par OpenSSL**, ce qui est suffisant pour un environnement de laboratoire.
+**Certbot n’a pas été utilisé**. Il a été **remplacé par OpenSSL**.
 
 ### Installation d’OpenSSL
 ```bash
@@ -75,7 +75,7 @@ sudo python3 https_server.py
 
 ---
 
-## 3️⃣ Configuration du Network Load Balancer (NLB)
+## Configuration du Network Load Balancer (NLB)
 
 Le NLB est utilisé comme **cible du VTAP**.
 
@@ -89,7 +89,7 @@ Le NLB est utilisé comme **cible du VTAP**.
 
 ---
 
-## 4️⃣ Configuration du VTAP
+## Configuration du VTAP
 
 Le VTAP permet de **miroiter le trafic** de l’instance serveur vers l’instance analyseur.
 
@@ -102,7 +102,7 @@ Le VTAP permet de **miroiter le trafic** de l’instance serveur vers l’instan
 
 ---
 
-## 5️⃣ Capture du trafic réseau
+## Capture du trafic réseau
 
 ### Installation de tcpdump
 ```bash
@@ -120,14 +120,14 @@ Le fichier de capture est ensuite analysé avec **Wireshark**.
 
 ---
 
-## 6️⃣ Analyse avec Wireshark
+## Analyse avec Wireshark
 
 ### Capture du trafic HTTP
 Dans Wireshark, les requêtes HTTP GET sont visibles.
 
 ![Capture HTTP](imagesTP5/wireshark_capture.png)
 
-➡️ **10.0.0.2 correspond à l’adresse IP privée de l’instance serveur**, dont le trafic est capturé via le VTAP par l’instance analyseur.
+**10.0.0.2 correspond à l’adresse IP privée de l’instance serveur**, dont le trafic est capturé via le VTAP par l’instance analyseur.
 
 ### Capture du trafic VTAP (VXLAN)
 Le filtre suivant a été utilisé :
@@ -141,7 +141,7 @@ Cela confirme que le trafic est bien **miroité par le VTAP**.
 
 ---
 
-## 7️⃣ Installation et configuration de l’antivirus ClamAV
+## Installation et configuration de l’antivirus ClamAV
 
 ### Installation
 ```bash
@@ -162,7 +162,7 @@ sudo freshclam
 
 ---
 
-## 8️⃣ Sécurité réseau
+## Sécurité réseau
 
 Les règles suivantes ont été configurées dans les **Security Lists** :
 - TCP 80 (HTTP)
@@ -173,14 +173,5 @@ Les règles suivantes ont été configurées dans les **Security Lists** :
 
 ---
 
-## ✅ Conclusion
 
-Ce TP a permis de :
-- Déployer un serveur web sécurisé **HTTP/HTTPS** sur Oracle Cloud
-- Générer un certificat SSL auto‑signé avec **OpenSSL** (remplacement de Certbot)
-- Configurer un **VTAP** pour la surveillance réseau
-- Analyser le trafic avec **tcpdump** et **Wireshark**
-- Renforcer la sécurité du serveur avec **ClamAV**
-
-La documentation sert de **preuve complète** et de **backup** du travail effectué.
 
