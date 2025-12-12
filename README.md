@@ -1,175 +1,166 @@
 # TP5 – VTAP, Wireshark, HTTPS et Antivirus (Oracle Cloud)
 
-**Cours :** 420-06C-FX – Réseaux  
-**Enseignant :** Jean‑Sébastien Nadeau  
+**Cours :** Réseau (420-06C-FX)  
+**Enseignant :** Jean-Sébastien Nadeau  
 **Session :** Automne 2025
 
-**Travail pratique 5 :  Configurer un VTAP, utilisation de Wireshark,
-configuration d'un Serveur https et installation d'un antivirus sur Oracle cloud**
+---
 
-**Coéquipiers : Justin Lavigueur et Alexandre Sweeney**
+## BUT
+Le but de ce travail pratique est de mettre en place un serveur web sécurisé sur Oracle Cloud et d’analyser le trafic réseau généré. Pour ce faire, nous avons configuré un serveur HTTP et HTTPS, remplacé Certbot par un certificat SSL auto-signé avec OpenSSL, mis en place un VTAP pour miroiter le trafic et utilisé tcpdump ainsi que Wireshark pour l’analyse. Finalement, un antivirus ClamAV a été installé afin de renforcer la sécurité de l’instance serveur.
 
 ---
 
-## Objectifs du TP
-- Héberger un site web **HTTP (80)** et **HTTPS (443)** sur Oracle Cloud
-- Générer un **certificat SSL auto‑signé avec OpenSSL** (en remplacement de Certbot)
-- Configurer un **VTAP** afin de miroiter le trafic réseau
-- Analyser le trafic **HTTP / HTTPS** avec **tcpdump** et **Wireshark**
-- Installer et configurer un **antivirus ClamAV** sur l’instance serveur
+## 1. Architecture du laboratoire
 
----
-
-## Architecture du laboratoire
-Deux instances Oracle Cloud sont utilisées :
-- **Instance serveur** : hébergement du site web (HTTP/HTTPS)
-- **Instance analyseur (VTAP)** : réception et analyse du trafic miroir
+Le laboratoire est composé de **deux instances Oracle Cloud** :
+- Une **instance serveur**, utilisée pour héberger le site web en HTTP (port 80) et HTTPS (port 443)
+- Une **instance analyseur**, utilisée pour recevoir le trafic miroir via le VTAP et l’analyser avec Wireshark
 
 ![Deux instances OCI](imagesTP5/deux_instance.png)
 
 ---
 
-## Création et configuration du site web
+## 2. Création du site web
 
-### Création du fichier `index.html`
-Le fichier HTML a été créé et modifié directement sur l’instance serveur.
+### 2.1 Création du fichier index.html
 
-![Création index.html](imagesTP5/creation_index.png)
+Nous avons créé le fichier `index.html` directement sur l’instance serveur afin de tester le bon fonctionnement du serveur web.
+
+![Création du fichier index](imagesTP5/creation_index.png)
 ![Contenu du fichier index.html](imagesTP5/fichier_index.png)
 
-### Lancement du serveur HTTP (port 80)
+### 2.2 Installation de Python
+
+Avant de lancer le serveur web, nous avons installé Python sur l’instance serveur.
+
+![Installation Python](imagesTP5/install_python.png)
+![Installation Python – suite](imagesTP5/install_python2.png)
+
+### 2.3 Lancement du serveur HTTP (port 80)
+
+Une fois le fichier HTML prêt, nous avons démarré un serveur HTTP à l’aide de Python.
+
 ```bash
 sudo python3 -m http.server 80
 ```
 
-![Serveur HTTP actif](imagesTP5/lancement_python80.png)
-![Page index – HTTP](imagesTP5/serveur_80_index.png)
+![Lancement serveur HTTP](imagesTP5/lancement_python80.png)
+![Page index HTTP](imagesTP5/serveur_80_index.png)
 
 ---
 
-## HTTPS avec certificat SSL auto‑signé (OpenSSL)
+## 3. Mise en place du HTTPS avec OpenSSL
 
-**Certbot n’a pas été utilisé**. Il a été **remplacé par OpenSSL**.
+Pour la sécurisation HTTPS, **Certbot n’a pas été utilisé**. Nous l’avons remplacé par la création d’un **certificat SSL auto-signé avec OpenSSL**, ce qui est suffisant dans un contexte de laboratoire.
 
-### Installation d’OpenSSL
-```bash
-sudo apt install openssl
-```
+### 3.1 Génération du certificat SSL
 
-### Génération du certificat
+Les commandes suivantes ont été utilisées pour générer la clé privée, la requête CSR et le certificat auto-signé :
+
 ```bash
 sudo openssl genrsa -out server.key 2048
 sudo openssl req -new -key server.key -out server.csr
 sudo openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 ```
 
-![Création certificat SSL](imagesTP5/openssl_certificate.png)
-![CSR et informations SSL](imagesTP5/openssl_certificate_2.png)
-![Certificat auto‑signé créé](imagesTP5/openssl_certificate_3.png)
-![Copie des certificats SSL](imagesTP5/openssl_certificate_4.png)
+![Création certificat OpenSSL](imagesTP5/openssl_certificate.png)
+![Informations CSR](imagesTP5/openssl_certificate_2.png)
+![Certificat généré](imagesTP5/openssl_certificate_3.png)
+![Copie des certificats](imagesTP5/openssl_certificate_4.png)
 
-### Lancement du serveur HTTPS (port 443)
+### 3.2 Lancement du serveur HTTPS (port 443)
+
+Après la création du certificat, nous avons lancé un serveur HTTPS sur le port 443.
+
 ```bash
 sudo python3 https_server.py
 ```
 
-![Serveur HTTPS actif](imagesTP5/lancement_python443.png)
-![Page index – HTTPS](imagesTP5/serveur_443_index.png)
+![Lancement serveur HTTPS](imagesTP5/lancement_python443.png)
+![Page index HTTPS](imagesTP5/serveur_443_index.png)
 
-> Le navigateur affiche « Non sécurisé », ce qui est **normal** avec un certificat auto‑signé, mais le chiffrement TLS est fonctionnel.
+Le navigateur affiche un avertissement de sécurité, ce qui est normal puisqu’il s’agit d’un certificat auto-signé. Le chiffrement TLS est toutefois fonctionnel.
 
 ---
 
-## Configuration du Network Load Balancer (NLB)
+## 4. Configuration du Network Load Balancer
 
-Le NLB est utilisé comme **cible du VTAP**.
+Un **Network Load Balancer (NLB)** a été configuré afin de servir de cible au VTAP.
 
-![NLB – Vue générale](imagesTP5/nlb.png)
+![NLB](imagesTP5/nlb.png)
 
-### Backend set VTAP
+### 4.1 Backend du NLB
+
 ![Backend NLB](imagesTP5/nlb_backend.png)
 
-### Listener UDP 4789 (VXLAN)
+### 4.2 Listener UDP 4789
+
+Le listener UDP 4789 est utilisé pour le trafic VXLAN généré par le VTAP.
+
 ![Listener UDP 4789](imagesTP5/nlb_listener_4789.png)
 
 ---
 
-## Configuration du VTAP
+## 5. Configuration du VTAP
 
-Le VTAP permet de **miroiter le trafic** de l’instance serveur vers l’instance analyseur. En fait, un point d'accès virtuel de test (VTAP) reproduit le trafic d'une source choisie vers une
-destination définie afin de faciliter le dépannage, l'analyse de sécurité et la surveillance. Le
-VTAP s'appuie sur un filtre d'entrée — un ensemble de règles déterminant quel trafic est
-dupliqué.
-
-### Connexion à Oracle Cloud
-- On se connecte à notre compte OCI via le navigateur web.
-- Par la suite, on accéde au tableau de bord principal d’`Oracle Cloud`.
-![Connexion oracle cloud](imagesTP5/connexionOracle.png)
+Le VTAP permet de dupliquer le trafic réseau de l’instance serveur vers l’instance analyseur.
 
 ![Création du VTAP](imagesTP5/vtap_creation.png)
 ![VTAP actif](imagesTP5/vtap.png)
 
-- **Source** : VNIC de l’instance serveur
-- **Target** : Network Load Balancer
-- **Filtre** : ANY
+La source du VTAP correspond à l’interface réseau de l’instance serveur, tandis que la cible est le Network Load Balancer.
 
 ---
 
-## Capture du trafic réseau
+## 6. Capture du trafic réseau
 
-### Installation de tcpdump
+### 6.1 Installation de tcpdump
+
+Pour capturer le trafic directement sur l’instance, nous avons installé tcpdump.
+
 ```bash
 sudo apt install tcpdump
 ```
 
 ![Installation tcpdump](imagesTP5/install_tcpdump.png)
 
-### Capture du trafic
+### 6.2 Capture du trafic
+
 ```bash
 sudo tcpdump -i ens3 -w capture.pcap
 ```
 
-Le fichier de capture est ensuite analysé avec **Wireshark**.
-
-On curl pour envoyé des paquets
-
-```bash
-curl http://151.145.40.146
-```
-![Curl port80](imagesTP5/curl_80.png)
-
-
-```bash
-curl -k https://151.145.40.146
-```
-![Curl port443](imagesTP5/curl_443.png)
+Le fichier de capture a ensuite été analysé à l’aide de Wireshark sur l’instance analyseur.
 
 ---
 
-## Analyse avec Wireshark
+## 7. Analyse du trafic avec Wireshark
 
-### Capture du trafic HTTP
-Dans Wireshark, les requêtes HTTP GET sont visibles.
+### 7.1 Analyse HTTP / HTTPS
 
-![Capture HTTP](imagesTP5/wireshark_capture.png)
+Les captures montrent clairement les échanges HTTP et HTTPS. L’adresse **10.0.0.2 correspond à l’IP privée de l’instance serveur**, dont le trafic est capturé par l’instance analyseur via le VTAP.
 
-**10.0.0.2 correspond à l’adresse IP privée de l’instance serveur**, dont le trafic est capturé via le VTAP par l’instance analyseur.
+![Capture Wireshark HTTP](imagesTP5/wireshark_capture.png)
 
-### Capture du trafic VTAP (VXLAN)
-Le filtre suivant a été utilisé :
+### 7.2 Analyse du trafic VTAP (VXLAN)
+
+Un filtre a été appliqué afin d’afficher uniquement le trafic VXLAN :
+
 ```
 udp.port == 4789
 ```
 
-![Capture VXLAN 4789](imagesTP5/capture_wireshark_4789.png)
+![Capture VXLAN](imagesTP5/capture_wireshark_4789.png)
 
-Cela confirme que le trafic est bien **miroité par le VTAP**.
+Cela confirme que le trafic est correctement miroité par le VTAP.
 
 ---
 
-## Installation et configuration de l’antivirus ClamAV
+## 8. Installation et configuration de l’antivirus ClamAV
 
-### Installation
+### 8.1 Installation
+
 ```bash
 sudo apt install clamav clamav-daemon
 ```
@@ -177,20 +168,21 @@ sudo apt install clamav clamav-daemon
 ![Installation ClamAV](imagesTP5/install_antivirus.png)
 ![Installation clamd](imagesTP5/Install_clamav.png)
 
-### Activation et mise à jour
+### 8.2 Activation et mise à jour
+
 ```bash
 sudo systemctl start clamav-daemon
 sudo freshclam
 ```
 
-![Démarrage antivirus](imagesTP5/start_antivirus.png)
-![Mise à jour signatures](imagesTP5/sudo_freshcam.png)
+![Démarrage ClamAV](imagesTP5/start_antivirus.png)
+![Mise à jour freshclam](imagesTP5/sudo_freshcam.png)
 
 ---
 
-## Sécurité réseau
+## 9. Sécurité réseau
 
-Les règles suivantes ont été configurées dans les **Security Lists** :
+Les règles suivantes ont été ajoutées dans les Security Lists d’Oracle Cloud :
 - TCP 80 (HTTP)
 - TCP 443 (HTTPS)
 - UDP 4789 (VTAP / VXLAN)
@@ -199,5 +191,6 @@ Les règles suivantes ont été configurées dans les **Security Lists** :
 
 ---
 
+## Conclusion
 
-
+Ce travail pratique nous a permis de déployer un serveur web HTTP et HTTPS sur Oracle Cloud, de sécuriser les communications à l’aide d’un certificat SSL auto-signé avec OpenSSL, de configurer un VTAP pour l’analyse du trafic réseau et d’utiliser tcpdump et Wireshark pour observer les communications. L’ajout de ClamAV permet également de renforcer la sécurité de l’instance serveur. Ce document sert de preuve complète du travail réalisé et de sauvegarde en cas de problème avec les instances OCI.
