@@ -1,140 +1,186 @@
 # TP5 – VTAP, Wireshark, HTTPS et Antivirus (Oracle Cloud)
 
-**Cours :** 420‑06C‑FX – Réseaux
+**Cours :** 420-06C-FX – Réseaux  
 **Enseignant :** Jean‑Sébastien Nadeau  
 **Session :** Automne 2025
 
-**Équipe :**  
-- Nom étudiant 1  
-- Nom étudiant 2
+---
 
-
+## 🎯 Objectifs du TP
+- Héberger un site web **HTTP (80)** et **HTTPS (443)** sur Oracle Cloud
+- Générer un **certificat SSL auto‑signé avec OpenSSL** (en remplacement de Certbot)
+- Configurer un **VTAP** afin de miroiter le trafic réseau
+- Analyser le trafic **HTTP / HTTPS** avec **tcpdump** et **Wireshark**
+- Installer et configurer un **antivirus ClamAV** sur l’instance serveur
 
 ---
 
-## Architecture générale
-- 2 instance **Oracle Cloud Compute (Ubuntu)**
-- 1 **VTAP** attaché à l’instance analyseur
-- 1 serveur web Python (HTTP & HTTPS) attaché à l'instance serveur
-- 1 antivirus **ClamAV**
+## 🧱 Architecture du laboratoire
+Deux instances Oracle Cloud sont utilisées :
+- **Instance serveur** : hébergement du site web (HTTP/HTTPS)
+- **Instance analyseur (VTAP)** : réception et analyse du trafic miroir
 
-![Architecture OCI](imagesTP5/connexionOracle.png)
+![Deux instances OCI](imagesTP5/deux_instance.png)
 
-
-
-
-![Instances](imagesTP5/les_instances.png)
 ---
 
-## Configuration du serveur HTTP
+## 1️⃣ Création et configuration du site web
 
-### Démarrage du serveur HTTP
+### Création du fichier `index.html`
+Le fichier HTML a été créé et modifié directement sur l’instance serveur.
+
+![Création index.html](imagesTP5/creation_index.png)
+![Contenu du fichier index.html](imagesTP5/fichier_index.png)
+
+### Lancement du serveur HTTP (port 80)
 ```bash
 sudo python3 -m http.server 80
 ```
 
-### Vérification dans le navigateur
-- Accès via l’IP publique de l’instance
-- Affichage du fichier `index.html`
-
-![Serveur HTTP actif](imagesTP5/cmd-serv.png)
+![Serveur HTTP actif](imagesTP5/lancement_python80.png)
+![Page index – HTTP](imagesTP5/serveur_80_index.png)
 
 ---
 
-## Création et configuration du VTAP
+## 2️⃣ HTTPS avec certificat SSL auto‑signé (OpenSSL)
 
-### Étapes réalisées dans OCI
-1. Création du **VTAP**
-2. Sélection de l’instance comme **source**
-3. Définition du **VTAP target**
-4. Configuration des **filtres (HTTP / TCP)**
+⚠️ **Certbot n’a pas été utilisé**. Il a été **remplacé par OpenSSL**, ce qui est suffisant pour un environnement de laboratoire.
 
-![Création du VTAP](imagesTP5/vtap.png)
-![Source et Target du VTAP](imagesTP5/vtap%20%282%29.png)
-![Détails du VTAP en cours d'exécution](imagesTP5/vtap%20%283%29.png)
-
----
-
-## Capture et analyse avec Wireshark
-
-### Filtres utilisés
-- Filtre d’affichage :
-```
-http || tcp.port == 80
-```
-
-### Analyse effectuée
-- Requêtes HTTP GET
-- Réponses HTTP (codes 200, 304, etc.)
-- En‑têtes HTTP
-- Cookies
-- Suivi de flux TCP
-
-![Wireshark – trafic TLS / HTTPS](imagesTP5/wireshark.png)
-![Wireshark – requêtes HTTP GET](imagesTP5/wireshark%20%282%29.png)
-![Wireshark – VXLAN / UDP 4789](imagesTP5/wireshark%20%283%29.png)
-
----
-
-## Hébergement du site HTTPS (SSL/TLS)
-
-### Installation de CertBot
+### Installation d’OpenSSL
 ```bash
-sudo apt update
-sudo apt install certbot -y
+sudo apt install openssl
 ```
 
 ### Génération du certificat
 ```bash
-sudo certbot certonly --standalone -d votre-domaine-ou-ip
+sudo openssl genrsa -out server.key 2048
+sudo openssl req -new -key server.key -out server.csr
+sudo openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 ```
 
-### Configuration du serveur HTTPS Python
-- Utilisation du certificat généré par **Let's Encrypt**
-- Exécution en mode `sudo`
+![Création certificat SSL](imagesTP5/openssl_certificate.png)
+![CSR et informations SSL](imagesTP5/openssl_certificate_2.png)
+![Certificat auto‑signé créé](imagesTP5/openssl_certificate_3.png)
+![Copie des certificats SSL](imagesTP5/openssl_certificate_4.png)
 
-![Installation de Certbot](imagesTP5/9-cmd.png)
-![Serveur HTTPS actif](imagesTP5/serveur_index.png)
+### Lancement du serveur HTTPS (port 443)
+```bash
+sudo python3 https_server.py
+```
+
+![Serveur HTTPS actif](imagesTP5/lancement_python443.png)
+![Page index – HTTPS](imagesTP5/serveur_443_index.png)
+
+> Le navigateur affiche « Non sécurisé », ce qui est **normal** avec un certificat auto‑signé, mais le chiffrement TLS est fonctionnel.
 
 ---
 
-## Installation et configuration de ClamAV
+## 3️⃣ Configuration du Network Load Balancer (NLB)
+
+Le NLB est utilisé comme **cible du VTAP**.
+
+![NLB – Vue générale](imagesTP5/nlb.png)
+
+### Backend set VTAP
+![Backend NLB](imagesTP5/nlb_backend.png)
+
+### Listener UDP 4789 (VXLAN)
+![Listener UDP 4789](imagesTP5/nlb_listener_4789.png)
+
+---
+
+## 4️⃣ Configuration du VTAP
+
+Le VTAP permet de **miroiter le trafic** de l’instance serveur vers l’instance analyseur.
+
+![Création du VTAP](imagesTP5/vtap_creation.png)
+![VTAP actif](imagesTP5/vtap.png)
+
+- **Source** : VNIC de l’instance serveur
+- **Target** : Network Load Balancer
+- **Filtre** : ANY
+
+---
+
+## 5️⃣ Capture du trafic réseau
+
+### Installation de tcpdump
+```bash
+sudo apt install tcpdump
+```
+
+![Installation tcpdump](imagesTP5/install_tcpdump.png)
+
+### Capture du trafic
+```bash
+sudo tcpdump -i ens3 -w capture.pcap
+```
+
+Le fichier de capture est ensuite analysé avec **Wireshark**.
+
+---
+
+## 6️⃣ Analyse avec Wireshark
+
+### Capture du trafic HTTP
+Dans Wireshark, les requêtes HTTP GET sont visibles.
+
+![Capture HTTP](imagesTP5/wireshark_capture.png)
+
+➡️ **10.0.0.2 correspond à l’adresse IP privée de l’instance serveur**, dont le trafic est capturé via le VTAP par l’instance analyseur.
+
+### Capture du trafic VTAP (VXLAN)
+Le filtre suivant a été utilisé :
+```
+udp.port == 4789
+```
+
+![Capture VXLAN 4789](imagesTP5/capture_wireshark_4789.png)
+
+Cela confirme que le trafic est bien **miroité par le VTAP**.
+
+---
+
+## 7️⃣ Installation et configuration de l’antivirus ClamAV
 
 ### Installation
 ```bash
-sudo apt install clamav clamav-daemon -y
+sudo apt install clamav clamav-daemon
 ```
 
-### Mise à jour des signatures
+![Installation ClamAV](imagesTP5/install_antivirus.png)
+![Installation clamd](imagesTP5/Install_clamav.png)
+
+### Activation et mise à jour
 ```bash
+sudo systemctl start clamav-daemon
 sudo freshclam
 ```
 
-### Test de scan
-```bash
-clamscan test.txt
-```
-
-![Installation de ClamAV](imagesTP5/4-cmd.png)
-![Mise à jour des signatures ClamAV](imagesTP5/6-cmd.png)
-![Service clamd actif](imagesTP5/7-cmd.png)
+![Démarrage antivirus](imagesTP5/start_antivirus.png)
+![Mise à jour signatures](imagesTP5/sudo_freshcam.png)
 
 ---
 
-## Sécurité et bonnes pratiques
-- Pas d’utilisation de **ufw** (recommandation OCI)
-- Accès SSH sécurisé par clé
-- HTTPS avec certificat valide
-- Analyse antivirus régulière
+## 8️⃣ Sécurité réseau
+
+Les règles suivantes ont été configurées dans les **Security Lists** :
+- TCP 80 (HTTP)
+- TCP 443 (HTTPS)
+- UDP 4789 (VTAP / VXLAN)
+
+![Security List](imagesTP5/secure_list.png)
 
 ---
 
-## Contenu du dépôt Git
-- `README.md`
-- Dossier `imagesTP5/`
-- Captures d’écran de toutes les étapes
+## ✅ Conclusion
 
----
+Ce TP a permis de :
+- Déployer un serveur web sécurisé **HTTP/HTTPS** sur Oracle Cloud
+- Générer un certificat SSL auto‑signé avec **OpenSSL** (remplacement de Certbot)
+- Configurer un **VTAP** pour la surveillance réseau
+- Analyser le trafic avec **tcpdump** et **Wireshark**
+- Renforcer la sécurité du serveur avec **ClamAV**
 
-
+La documentation sert de **preuve complète** et de **backup** du travail effectué.
 
