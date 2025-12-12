@@ -10,7 +10,7 @@
 
 ---
 
-## 🎯 Objectifs du travail
+## Objectifs du travail
 - Configurer un **VTAP** sur Oracle Cloud Infrastructure (OCI)
 - Capturer et analyser du trafic **HTTP** avec **Wireshark**
 - Héberger un site **HTTPS** avec **SSL/TLS (CertBot / Let's Encrypt)**
@@ -19,7 +19,7 @@
 
 ---
 
-## 🧱 Architecture générale
+## Architecture générale
 - 1 instance **Oracle Cloud Compute (Ubuntu)**
 - 1 **VTAP** attaché à l’instance
 - 1 machine de capture avec **Wireshark**
@@ -30,7 +30,7 @@
 
 ---
 
-## 1️⃣ Configuration du serveur HTTP
+## Configuration du serveur HTTP
 
 ### Démarrage du serveur HTTP
 ```bash
@@ -45,7 +45,7 @@ sudo python3 -m http.server 80
 
 ---
 
-## 2️⃣ Création et configuration du VTAP
+## Création et configuration du VTAP
 
 ### Étapes réalisées dans OCI
 1. Création du **VTAP**
@@ -59,7 +59,7 @@ sudo python3 -m http.server 80
 
 ---
 
-## 3️⃣ Capture et analyse avec Wireshark
+## Capture et analyse avec Wireshark
 
 ### Filtres utilisés
 - Filtre d’affichage :
@@ -80,7 +80,7 @@ http || tcp.port == 80
 
 ---
 
-## 4️⃣ Hébergement du site HTTPS (SSL/TLS)
+## Hébergement du site HTTPS (SSL/TLS)
 
 ### Installation de CertBot
 ```bash
@@ -102,7 +102,7 @@ sudo certbot certonly --standalone -d votre-domaine-ou-ip
 
 ---
 
-## 5️⃣ Installation et configuration de ClamAV
+## Installation et configuration de ClamAV
 
 ### Installation
 ```bash
@@ -125,7 +125,7 @@ clamscan test.txt
 
 ---
 
-## 🔐 Sécurité et bonnes pratiques
+## Sécurité et bonnes pratiques
 - Pas d’utilisation de **ufw** (recommandation OCI)
 - Accès SSH sécurisé par clé
 - HTTPS avec certificat valide
@@ -133,27 +133,12 @@ clamscan test.txt
 
 ---
 
-## 📁 Contenu du dépôt Git
+## Contenu du dépôt Git
 - `README.md`
 - Dossier `imagesTP5/`
 - Captures d’écran de toutes les étapes
 
 ---
 
-## 📎 Informations de remise
-- IP publique du serveur HTTPS
-- Clé SSH privée
-- Lien vers le dépôt GitHub **privé**
-- Enseignant ajouté comme contributeur : **jsteach**
 
----
-
-## ✅ Conclusion
-Ce travail nous a permis de comprendre concrètement :
-- La surveillance réseau avec un **VTAP**
-- L’analyse de trafic avec **Wireshark**
-- La sécurisation d’un serveur avec **HTTPS**
-- Le renforcement de la sécurité via **ClamAV**
-
-Le document sert également de **backup complet** en cas de problème avec les instances OCI.
 
