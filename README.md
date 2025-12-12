@@ -190,7 +190,3 @@ Les règles suivantes ont été ajoutées dans les Security Lists d’Oracle Clo
 ![Security List](imagesTP5/secure_list.png)
 
 ---
-
-## Conclusion
-
-Ce travail pratique nous a permis de déployer un serveur web HTTP et HTTPS sur Oracle Cloud, de sécuriser les communications à l’aide d’un certificat SSL auto-signé avec OpenSSL, de configurer un VTAP pour l’analyse du trafic réseau et d’utiliser tcpdump et Wireshark pour observer les communications. L’ajout de ClamAV permet également de renforcer la sécurité de l’instance serveur. Ce document sert de preuve complète du travail réalisé et de sauvegarde en cas de problème avec les instances OCI.
