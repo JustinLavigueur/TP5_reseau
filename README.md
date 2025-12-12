@@ -133,6 +133,15 @@ sudo tcpdump -i ens3 -w capture.pcap
 
 Le fichier de capture a ensuite été analysé à l’aide de Wireshark sur l’instance analyseur.
 
+```bash
+curl http://151.145.40.146
+```
+![Installation tcpdump](imagesTP5/curl_80.png)
+
+```bash
+curl -k https://151.145.40.146
+```
+![Installation tcpdump](imagesTP5/curl_443.png)
 ---
 
 ## 7. Analyse du trafic avec Wireshark
