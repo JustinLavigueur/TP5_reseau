@@ -4,6 +4,11 @@
 **Enseignant :** Jean‑Sébastien Nadeau  
 **Session :** Automne 2025
 
+**Travail pratique 5 :  Configurer un VTAP, utilisation de Wireshark,
+configuration d'un Serveur https et installation d'un antivirus sur Oracle cloud**
+
+**Coéquipiers : Justin Lavigueur et Alexandre Sweeney**
+
 ---
 
 ## Objectifs du TP
