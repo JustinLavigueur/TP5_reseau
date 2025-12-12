@@ -136,12 +136,12 @@ Le fichier de capture a ensuite été analysé à l’aide de Wireshark sur l’
 ```bash
 curl http://151.145.40.146
 ```
-![Installation tcpdump](imagesTP5/curl_80.png)
+![curl80](imagesTP5/curl_80.png)
 
 ```bash
 curl -k https://151.145.40.146
 ```
-![Installation tcpdump](imagesTP5/curl_443.png)
+![curl443](imagesTP5/curl_443.png)
 ---
 
 ## 7. Analyse du trafic avec Wireshark
