@@ -142,6 +142,8 @@ curl http://151.145.40.146
 curl -k https://151.145.40.146
 ```
 ![curl443](imagesTP5/curl_443.png)
+
+On curl pour faire générer du traffic
 ---
 
 ## 7. Analyse du trafic avec Wireshark
