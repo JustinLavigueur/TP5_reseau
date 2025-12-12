@@ -8,22 +8,14 @@
 - Nom étudiant 1  
 - Nom étudiant 2
 
----
 
-## Objectifs du travail
-- Configurer un **VTAP** sur Oracle Cloud Infrastructure (OCI)
-- Capturer et analyser du trafic **HTTP** avec **Wireshark**
-- Héberger un site **HTTPS** avec **SSL/TLS (CertBot / Let's Encrypt)**
-- Installer et tester un **antivirus ClamAV** sur une instance OCI
-- Documenter toutes les étapes en **Markdown avec captures d’écran**
 
 ---
 
 ## Architecture générale
-- 1 instance **Oracle Cloud Compute (Ubuntu)**
-- 1 **VTAP** attaché à l’instance
-- 1 machine de capture avec **Wireshark**
-- 1 serveur web Python (HTTP & HTTPS)
+- 2 instance **Oracle Cloud Compute (Ubuntu)**
+- 1 **VTAP** attaché à l’instance analyseur
+- 1 serveur web Python (HTTP & HTTPS) attaché à l'instance serveur
 - 1 antivirus **ClamAV**
 
 ![Architecture OCI](imagesTP5/connexionOracle.png)
